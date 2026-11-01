@@ -1,0 +1,29 @@
+{% assign collection = site.collections | where: "label", include.label | first %}
+{% assign target_path = include.path %}
+
+{% assign directories = "" | split: "," %}
+
+<ul>
+  {% for file in collection.files %}
+    {% unless file.path contains target_path %}
+      {% continue %}
+    {% endunless %}
+
+    {% assign path_array = file.path | split: "/" %}
+    <!-- Check if the file is inside at least one directory -->
+    {% if path_array.size > 1 %}
+      <!-- Grab the top-level directory or specific index -->
+      {% assign dir_path = path_array | pop | join: "/" %}
+
+      <!-- Add to our list if it's not already there -->
+      {% unless directories contains dir_path %}
+        {% assign directories = directories | push: dir_path %}
+          <li><b>{{ dir_path }}</b></li>
+      {% endunless %}
+    {% endif %}
+
+    <li>
+      <a href="{{ file.url | relative_url }}">{{ file.path }}</a>
+    </li>
+  {% endfor %}
+</ul>
